@@ -1,13 +1,12 @@
 #ifndef __BOSS_H__
 #define __BOSS_H__
 
-#include "Entity.h"
-#include "Boss_Hero.h"
-#include "Boss_Bullet.h"
+#include "Bullet.h"
+#include "Factory.h"
 USING_NS_CC;
 
-class Boss_Bullet;
-class Boss_Hero;
+class Bullet;
+class Player;
 
 class Boss : public Entity
 {
@@ -17,15 +16,15 @@ public:
 public:
 	Boss();
 
-	void BindHero(Boss_Hero* phero);
+	void BindHero(Player* phero);
 
 	int GetCurrentHP();
 	int GetFullHP();
 	void SetSkill(const std::string &filename);
 
-	void Hurt(int atk, int bulletState);
+	void Hurt(int atk, int bulletState = 0);
 
-	void Attack(int num, float scale, int atk);
+	void Attack(int num, float scale);
 
 	void HurtingAnimation(int atk, int bulletState);
 
@@ -36,15 +35,16 @@ private:
 	float time;
 	bool flag;
 
-	Boss_Hero* hero;
+	Player* hero;
 
 	std::string monster;
 	std::string skill;
 	int currentHP;
 	int fullHP;
+	int atk;
 
 	int count; //×Óµ¯¼ÆÊý
-	Vector<Boss_Bullet* > bulletArray;
+	Vector<Bullet* > bulletArray;
 };
 
 

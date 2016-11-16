@@ -6,6 +6,7 @@ Boss::Boss()
 	time = 0.0f;
 	fullHP = 10000;
 	currentHP = fullHP;
+	atk = 100;
 }
 
 bool Boss::init()
@@ -16,10 +17,9 @@ bool Boss::init()
 	return true;
 }
 
-void Boss::BindHero(Boss_Hero* phero)
+void Boss::BindHero(Player* phero)
 {
 	this->hero = phero;
-	return;
 }
 
 int Boss::GetCurrentHP()
@@ -72,26 +72,23 @@ void Boss::Hurt(int atk, int bulletState) //Boss受伤
 	return;
 }
 
-void Boss::Attack(int num, float scale, int atk) //Boss攻击
+void Boss::Attack(int num, float scale) //Boss攻击
 {
-	Boss_Bullet* bullet = NULL;
+	Bullet* bullet = nullptr;
 
 	for (int i = 0; i < num; i++)
 	{
 		//创建子弹
-		bullet = Boss_Bullet::create();
+		bullet = Bullet::create();
 		auto pic = Sprite::createWithSpriteFrameName(this->skill);
 		pic->setScale(scale);
 		bullet->BindSprite(pic);
 		bullet->SetATK(atk);
-		if (i % 2 == 0)
-		{
+		//bullet = Factory::GetInstance()->CreateBullet(BulletType::Ball, scale, this->atk);
+		if (i & 1)
 			bullet->setPosition(this->getPositionX(), this->getPositionY() + count);
-		}
 		else
-		{
 			bullet->setPosition(this->getPositionX(), this->getPositionY() - count);
-		}
 
 		this->getParent()->addChild(bullet);
 
@@ -109,7 +106,7 @@ void Boss::Aim(float delta) //Boss子弹自动追踪英雄
 		return;
 	}
 
-	for (cocos2d::Vector<Boss_Bullet*>::iterator bullet = bulletArray.begin(); bullet != bulletArray.end(); bullet++)
+	for (cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin(); bullet != bulletArray.end(); bullet++)
 	{
 		if ((*bullet)->getPositionX() <= hero->getPositionX())
 		{
@@ -127,7 +124,7 @@ void Boss::update(float delta)
 	{
 
 		count = 0;
-		cocos2d::Vector<Boss_Bullet*>::iterator bullet = bulletArray.begin();
+		cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin();
 		while (bullet != bulletArray.end())
 		{
 			if (this->GetCurrentHP() >= this->GetFullHP() * 2 / 3) //Boss血量大于一半时子弹普通向右移动
@@ -157,7 +154,7 @@ void Boss::update(float delta)
 				(*bullet)->removeFromParentAndCleanup(true);
 				bullet = bulletArray.erase(bullet);
 			}
-			else if ((*bullet)->IsCollideWithHero(hero))
+			else if (Entity::IsCollideWith(hero, (*bullet)))
 			{
 				hero->Hurt((*bullet)->GetATK());
 				(*bullet)->removeFromParentAndCleanup(true);
@@ -217,18 +214,14 @@ void Boss::HurtingAnimation(int atk, int bulletState)
 			sprintf(name, "red (%d).png", i);
 			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
 		}
-		sprite->runAction(Sequence::create(
-			Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
-			callfun, nullptr)); break;
+		break;
 	case 2:
 		for (int i = 1; i <= 4; i++)
 		{
 			sprintf(name, "blue (%d).png", i);
 			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
 		}
-		sprite->runAction(Sequence::create(
-			Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
-			callfun, nullptr)); break;
+		break;
 	case 4:
 		for (int i = 1; i <= 5; i++)
 		{
@@ -236,12 +229,11 @@ void Boss::HurtingAnimation(int atk, int bulletState)
 			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
 		}
 		sprite->setScale(10.0f); //因为图像大小的不一致需再次调整大小
-		sprite->runAction(Sequence::create(
-			Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
-			callfun, nullptr)); break;
+		break;
 	default:
 		return;
 	}
-
-	return;
+	sprite->runAction(Sequence::create(
+		Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
+		callfun, nullptr));
 }

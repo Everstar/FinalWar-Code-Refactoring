@@ -16,3 +16,10 @@ Sprite* Entity::getSprite()
 {
 	return pSprite;
 }
+
+bool Entity::IsCollideWith(Entity* one, Entity* other)
+{
+	Rect entityRect = one->getBoundingBox();
+
+	return entityRect.containsPoint(other->getPosition());
+}

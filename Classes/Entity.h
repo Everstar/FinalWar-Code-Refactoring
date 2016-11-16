@@ -10,6 +10,7 @@ class Entity :public Node
 public:
 	void BindSprite(Sprite* sprite);
 	Sprite* getSprite();
+	bool static IsCollideWith(Entity*, Entity*);
 private:
 	Sprite* pSprite;
 };

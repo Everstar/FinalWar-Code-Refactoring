@@ -2,13 +2,15 @@
 #define __FinalWar_H__
 
 #include "cocos2d.h"
-#include "Boss_Hero.h"
+#include "Player.h"
 #include "Boss.h"
-#include "Boss_Monster.h"
-#include "Boss_LabelLayer.h"
+#include "Monster.h"
+#include "LabelLayer.h"
+#include "Parameter.h"
+#include "Factory.h"
 USING_NS_CC;
 
-class Boss_LabelLayer;
+class LabelLayer;
 
 class FinalWar : public Layer
 {
@@ -21,27 +23,29 @@ public:
 
 	void initBG();
 	void initRole();
+	void RollingBackground();
+	void GameOver(bool win);
 	void Fail();
 	void Win();
 	void Turn();
 	void update(float delta);
 	void BossAttack(float delta);
 	void MonsterAttack(float delta);
-	void ReleaseMonster(const std::string &filename, float scale, int atk, int life);
+	void ReleaseMonster(MonsterType type, float scale, int atk, int life);
 	void onKeyPressed(EventKeyboard::KeyCode keycode, Event* event);
 private:
 	Size visibleSize;
-	Boss_LabelLayer* labellayer;
+	LabelLayer* labellayer;
 
 	Sprite* backgroundOne;
 	Sprite* backgroundTwo;
 
 	Boss* zijian;
-	Vector<Boss_Monster* > monsterArray;
-	Boss_Hero* boat;
-	Boss_Hero* huolong;
-	Boss_Hero* sensen;
-	Boss_Hero* littlestar;
+	Vector<Monster* > monsterArray;
+	Player* boat;
+	Player* dragon;
+	Player* forset;
+	Player* star;
 
 	short turned; //»­ÃæÊÇ·ñÐý×ª
 	bool leftright; //ÅÐ¶ÏBoss×óÓÒÒÆ¶¯
