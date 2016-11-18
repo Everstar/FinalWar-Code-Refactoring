@@ -4,7 +4,7 @@ Factory *Factory::instance = nullptr;
 
 Factory::Factory()
 {
-
+	Monster::addAllPrototypes();
 }
 
 Factory::~Factory()
@@ -13,7 +13,7 @@ Factory::~Factory()
 		delete instance;
 }
 
-Player* Factory::CreatePlayer(PlayerType type)
+Player* Factory::CreatePlayer(FigureType type)
 {
 	Player* player = nullptr;
 	player = Player::create();
@@ -69,43 +69,12 @@ Boss* Factory::CreateBoss()
 	return boss;
 }
 
-Monster* Factory::CreateMonster(MonsterType type, float scale, int atk, int life)
+Monster* Factory::CreateMonster(MonsterType type)
 {
-	if (type == MonsterType::BagSprite)
-	{
-		return BagSprite::create();
-	}
-
-	Monster *monster = Monster::create();
-
-	switch (type)
-	{
-	case BagSprite:
-		monster->BindSprite(Sprite::createWithSpriteFrameName(PATH_MONSTER_BAGSPRITE));
-		break;
-	case Banana:
-		monster->BindSprite(Sprite::createWithSpriteFrameName(PATH_MONSTER_BANANA));
-		break;
-	case Bat:
-		monster->BindSprite(Sprite::createWithSpriteFrameName(PATH_MONSTER_BAT));
-		break;
-	case ThunderBall:
-		monster->BindSprite(Sprite::createWithSpriteFrameName(PATH_MONSTER_THUNDERBALL));
-		break;
-	case Donggua:
-		monster->BindSprite(Sprite::createWithSpriteFrameName(PATH_MONSTER_DONGGUA));
-		break;
-	default:
-		break;
-	}
-
-	monster->setScale(scale);
-	monster->SetATK(atk);
-	monster->SetHP(life);
-	return monster;
+	return Monster::findAndClone(type);
 }
 
-Bullet* Factory::CreateBullet(BulletType type, float scale, int atk)
+Bullet* Factory::CreateBullet(BulletType type, int atk)
 {
 	Bullet *bullet = Bullet::create();
 	Sprite* pic;
@@ -113,17 +82,111 @@ Bullet* Factory::CreateBullet(BulletType type, float scale, int atk)
 	{
 	case Light:
 		pic = Sprite::createWithTexture(Director::getInstance()->getTextureCache()->getTextureForKey("bullet/bulletSize.png"));
+		pic->setScale(1.0f);
 		break;
 	case Ball:
 		pic = Sprite::createWithSpriteFrameName("B_bossbullet.png");
+		pic->setScale(0.5f);
 		break;
 	default:
 		break;
 	}
 
-	
-	pic->setScale(scale);
 	bullet->BindSprite(pic);
 	bullet->SetATK(atk);
 	return bullet;
+}
+
+void Factory::CreateHurtingAnimation(FigureType type, Sprite* &sprite, int bulletState)
+{
+	Vector<SpriteFrame *>loadVector;
+	char name[16];
+
+	sprite->setScale(5.0f);
+
+	//动画播放完毕后释放内存
+	auto callfun = CallFunc::create(([sprite](void){
+		sprite->setVisible(false);
+		sprite->removeFromParentAndCleanup(true);
+	}));
+
+	switch (type)
+	{
+	case Boat:
+		for (int i = 1; i <= 6; i++)
+		{
+			sprintf(name, "hurt (%d).png", i);
+			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
+		}
+		break;
+	case BOSS:
+		switch (bulletState)
+		{
+		case 1:
+			for (int i = 1; i <= 8; i++)
+			{
+				sprintf(name, "red (%d).png", i);
+				loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
+			}
+			break;
+		case 2:
+			for (int i = 1; i <= 4; i++)
+			{
+				sprintf(name, "blue (%d).png", i);
+				loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
+			}
+			break;
+		case 4:
+			for (int i = 1; i <= 5; i++)
+			{
+				sprintf(name, "green (%d).png", i);
+				loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
+			}
+			sprite->setScale(10.0f); //因为图像大小的不一致需再次调整大小
+			break;
+		default:
+			return;
+		}
+		break;
+	default:
+		break;
+	}
+
+	sprite->runAction(Sequence::create(
+		Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
+		callfun, nullptr));
+}
+
+LabelTTF* Factory::CreateBlinkNotification(FigureType type, int atk)
+{
+	LabelTTF* label;
+	switch (type)
+	{
+	case Boat:
+		label = LabelTTF::create(String::createWithFormat("-%d", atk)->getCString(), "arial", 56);
+		label->setColor(Color3B(0xFF, 0, 0));
+		label->setPosition(80, Director::getInstance()->getVisibleSize().height - 70);
+		break;
+	case BOSS:
+		label = LabelTTF::create(String::createWithFormat("Hit %d", atk)->getCString(), "arial", 56);
+		label->setColor(Color3B(255, 165, 0));
+		label->setPosition(Director::getInstance()->getVisibleSize().width * 0.8f, 70);
+		break;
+	case MONSTER:
+		label = LabelTTF::create(String::createWithFormat("Hit %d", atk)->getCString(), "arial", 36);
+		label->setColor(Color3B(255, 0, 0));
+		break;
+	default:
+		break;
+	}
+
+	auto act = Sequence::create(Blink::create(2.0f, 4),
+		CallFunc::create(([label](void){
+		label->setVisible(false);
+		label->removeFromParentAndCleanup(true);
+	})), nullptr);
+
+	label->runAction(act);
+
+	return label;
 }

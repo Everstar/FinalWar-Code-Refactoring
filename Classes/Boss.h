@@ -1,20 +1,23 @@
 #ifndef __BOSS_H__
 #define __BOSS_H__
 
+#include "BossState.h"
 #include "Bullet.h"
 #include "Factory.h"
 USING_NS_CC;
 
 class Bullet;
 class Player;
+class BossState;
 
 class Boss : public Entity
 {
 public:
-	virtual bool init();
+	bool init();
 	CREATE_FUNC(Boss);
 public:
-	Boss();
+	~Boss();
+	BossState* GetBossState();
 
 	void BindHero(Player* phero);
 
@@ -24,27 +27,26 @@ public:
 
 	void Hurt(int atk, int bulletState = 0);
 
-	void Attack(int num, float scale);
+	void Attack(int num);
 
 	void HurtingAnimation(int atk, int bulletState);
 
 	void Aim(float delta);
 	void update(float delta);
+
+	void SetBossState(BossState*);
+public:
+	Vector<Bullet* > bulletArray;
+	Player* hero;
 private:
-	Size visibleSize;
-	float time;
+	BossState* _bossState;
 	bool flag;
 
-	Player* hero;
-
-	std::string monster;
-	std::string skill;
 	int currentHP;
 	int fullHP;
 	int atk;
 
 	int count; //×Óµ¯¼ÆÊý
-	Vector<Bullet* > bulletArray;
 };
 
 

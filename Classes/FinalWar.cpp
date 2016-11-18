@@ -4,12 +4,7 @@ USING_NS_CC;
 
 FinalWar::FinalWar()
 {
-	monsterFile[0] = "F_BagSprite.png";
-	monsterFile[1] = "F_Banana.png";
-	monsterFile[2] = "F_Bat.png";
-	monsterFile[3] = "F_ThunderBall.png";
-	monsterFile[4] = "F_Donggua.png";
-	monsterNum = 0;
+	monsterNum = -1;
 
 	labellayer = nullptr;
 
@@ -24,8 +19,6 @@ FinalWar::FinalWar()
 	forset = nullptr;
 	star = nullptr;
 
-	updown = true;
-	leftright = true;
 	state = 0;
 	time = 0.0f;
 }
@@ -49,9 +42,7 @@ Scene* FinalWar::createScene()
 bool FinalWar::init()
 {
     if ( !Layer::init() )
-    {
         return false;
-    }
 
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_FIRE);
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_LASER);
@@ -102,17 +93,17 @@ void FinalWar::initBG()
 
 void FinalWar::initRole()
 {
-	boat = Factory::GetInstance()->CreatePlayer(PlayerType::Boat);
+	boat = Factory::GetInstance()->CreatePlayer(FigureType::Boat);
 	boat->setPosition(visibleSize.width / 5, visibleSize.height / 2);
 	this->addChild(boat, 1);
 
-	star = Factory::GetInstance()->CreatePlayer(PlayerType::Star);
+	star = Factory::GetInstance()->CreatePlayer(FigureType::Star);
 	boat->addChild(star);
 
-	dragon = Factory::GetInstance()->CreatePlayer(PlayerType::Dragon);
+	dragon = Factory::GetInstance()->CreatePlayer(FigureType::Dragon);
 	boat->addChild(dragon, 0);
 	
-	forset = Factory::GetInstance()->CreatePlayer(PlayerType::Forset);
+	forset = Factory::GetInstance()->CreatePlayer(FigureType::Forset);
 	boat->addChild(forset, 0);
 
 	zijian = Factory::GetInstance()->CreateBoss();
@@ -158,13 +149,9 @@ void FinalWar::update(float delta)
 
 	//判断胜利或失败
 	if (boat->GetCurrentHP() <= 0)
-	{
 		this->GameOver(false);
-	}
 	else if (zijian->GetCurrentHP() <= 0)
-	{
 		this->GameOver(true);
-	}
 
 	//限制英雄活动范围
 	if (boat->getPositionX() > zijian->getPositionX())
@@ -173,66 +160,11 @@ void FinalWar::update(float delta)
 		boat->setPositionX(zijian->getPositionX() - 800);
 	}
 	else if (boat->getPositionX() <= 40)
-	{
 		boat->setPositionX(40);
-	}
 	if (boat->getPositionY() >= visibleSize.height - 80)
-	{
 		boat->setPositionY(visibleSize.height - 80);
-	}
 	else if (boat->getPositionY() <= 40)
-	{
 		boat->setPositionY(40);
-	}
-
-	if (zijian->GetCurrentHP() <= (zijian->GetFullHP() / 2)) //设置Boss左右移动
-	{
-		if (leftright == true)
-		{
-			if (zijian->getPositionX() <= visibleSize.width * 0.88f)
-			{
-				zijian->setPositionX(zijian->getPositionX() + 3);
-			}
-			else
-			{
-				leftright = false;
-			}
-		}
-		else
-		{
-			if (zijian->getPositionX() >= visibleSize.width * 0.66f)
-			{
-				zijian->setPositionX(zijian->getPositionX() - 3);
-			}
-			else
-			{
-				leftright = true;
-			}
-		}
-	}
-
-	if (updown == true) //设置Boss上下移动
-	{
-		if (zijian->getPositionY() <= visibleSize.height - 100)
-		{
-			zijian->setPositionY(zijian->getPositionY() + 3 + (int)time % 8);
-		}
-		else
-		{
-			updown = false;
-		}
-	}
-	else
-	{
-		if (zijian->getPositionY() >= 0)
-		{
-			zijian->setPositionY(zijian->getPositionY() - 3 - (int)time % 8);
-		}
-		else
-		{
-			updown = true;
-		}
-	}
 
 	if (!monsterArray.empty())
 	{
@@ -241,9 +173,7 @@ void FinalWar::update(float delta)
 		{
 			//判断小怪位置
 			if ((*monster)->getPositionX() > 0) //小怪向左移动
-			{
 				(*monster)->setPositionX((*monster)->getPositionX() - 1);
-			}
 			
 			if ((*monster)->GetHP() <= 0) //小怪生命值低于0
 			{
@@ -262,13 +192,9 @@ void FinalWar::update(float delta)
 				monster = monsterArray.erase(monster);
 			}
 			else
-			{
 				monster++;
-			}
 		}
 	}
-
-	return;
 }
 
 void FinalWar::BossAttack(float delta)
@@ -282,25 +208,23 @@ void FinalWar::BossAttack(float delta)
 	{
 		num = 4;
 	}
-	zijian->Attack(num, 0.5f);
-	return;
+	zijian->Attack(num);
 }
 
 void FinalWar::MonsterAttack(float delta)
 {
-	this->ReleaseMonster(MonsterType(monsterNum++), 0.18f, 20 * (monsterNum + 1), 100 * monsterNum);
-	if (monsterNum >> 2)	monsterNum = 0;
-	return;
+	this->ReleaseMonster(MonsterType(++monsterNum));
+	if (monsterNum >> 2)	monsterNum = -1;
 }
 
-void FinalWar::ReleaseMonster(MonsterType type, float scale, int atk, int life) //释放小怪
+void FinalWar::ReleaseMonster(MonsterType type) //释放小怪
 {
 	Monster* monster = nullptr;
 
 	for (int i = 1; i <= MONSTER_NUM; i++)
 	{
 		//创建小怪
-		monster = Factory::GetInstance()->CreateMonster(type, scale, atk, life);
+		monster = Factory::GetInstance()->CreateMonster(type);
 		monster->setPosition(visibleSize.width + i * 120, CCRANDOM_0_1() * visibleSize.height);
 		this->addChild(monster);
 		monsterArray.pushBack(monster);
@@ -331,17 +255,17 @@ void FinalWar::onKeyPressed(EventKeyboard::KeyCode keycode, Event* event)
 	case (EventKeyboard::KeyCode::KEY_J) :
 		if (state == 0)
 		{
-			forset->Attack(1.0f);
+			forset->Attack();
 		}break;
 	case (EventKeyboard::KeyCode::KEY_L) :
 		if (state == 2)
 		{
-			dragon->Attack(1.0f);
+			dragon->Attack();
 		}break;
 	case (EventKeyboard::KeyCode::KEY_K) :
 		if (state == 1)
 		{
-			star->Attack(1.0f);
+			star->Attack();
 		}break;
 
 		//测试用================================Begin
@@ -349,7 +273,7 @@ void FinalWar::onKeyPressed(EventKeyboard::KeyCode keycode, Event* event)
 		boat->SetCurrentHP(0);
 		break;
 	case (EventKeyboard::KeyCode::KEY_M) :
-		zijian->Hurt(10000, 1);
+		zijian->Hurt(4999, 1);
 		break;
 		//测试用================================End
 

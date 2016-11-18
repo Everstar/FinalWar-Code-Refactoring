@@ -6,10 +6,13 @@ USING_NS_CC;
 
 class Donggua :public Monster
 {
-public:
+private:
 	Donggua();
-	CREATE_FUNC(Donggua);
-	virtual bool init();
+	bool init();
+public:
+	static Donggua* Instance;
+
+	Monster* clone();
 };
 
 

@@ -5,18 +5,11 @@
 #include "Player.h"
 #include "Monster.h"
 #include "Parameter.h"
-#include "BagSprite.h"
 USING_NS_CC;
 
 class Boss;
 class Player;
 class Monster;
-
-enum BulletType { Light, Ball };
-
-enum MonsterType { BagSprite, Banana, Bat, ThunderBall, Donggua };
-
-enum PlayerType { Forset, Star, Dragon, Boat };
 
 class Factory
 {
@@ -25,6 +18,8 @@ private:
 	Factory();
 	~Factory();
 
+	Monster* monsterPrototype;
+
 public:
 	static Factory* GetInstance(){
 		if (instance == nullptr) 
@@ -32,10 +27,13 @@ public:
 		return instance;
 	}
 
-	Player* CreatePlayer(PlayerType type);
+	Player* CreatePlayer(FigureType);
 	Boss* CreateBoss();
-	Monster* CreateMonster(MonsterType type, float scale, int atk, int life);
-	Bullet* CreateBullet(BulletType type, float scale, int atk);
+	Monster* CreateMonster(MonsterType);
+	Bullet* CreateBullet(BulletType, int);
+
+	void CreateHurtingAnimation(FigureType, Sprite*&, int = 0);
+	LabelTTF* CreateBlinkNotification(FigureType, int);
 };
 
 #endif

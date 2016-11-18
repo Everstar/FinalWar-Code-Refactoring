@@ -6,8 +6,13 @@ USING_NS_CC;
 
 class Banana :public Monster
 {
-public:
+private:
 	Banana();
+	bool init();
+public:
+	static Banana* Instance;
+
+	Monster* clone();
 };
 
 

@@ -6,8 +6,13 @@ USING_NS_CC;
 
 class Bat :public Monster
 {
-public:
+private:
 	Bat();
+	bool init();
+public:
+	static Bat* Instance;
+
+	Monster* clone();
 };
 
 

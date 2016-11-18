@@ -6,8 +6,13 @@ USING_NS_CC;
 
 class ThunderBall :public Monster
 {
-public:
+private:
 	ThunderBall();
+	bool init();
+public:
+	static ThunderBall* Instance;
+
+	Monster* clone();
 };
 
 

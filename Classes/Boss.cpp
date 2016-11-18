@@ -1,20 +1,33 @@
 #include "Boss.h"
+#include "BoringBoss.h"
 
-Boss::Boss()
+Boss::~Boss()
 {
-	flag = true;
-	time = 0.0f;
-	fullHP = 10000;
-	currentHP = fullHP;
-	atk = 100;
+	bulletArray.clear();
 }
 
 bool Boss::init()
 {
-	visibleSize = Director::getInstance()->getVisibleSize();
+	flag = true;
+	fullHP = 10000;
+	currentHP = fullHP;
+	atk = 100;
+
 	count = 0;
+	this->SetBossState(new BoringBoss());
 	this->scheduleUpdate(); //开启update函数
 	return true;
+}
+
+BossState* Boss::GetBossState()
+{
+	return this->_bossState;
+}
+
+void Boss::SetBossState(BossState* state)
+{
+	this->_bossState = state;
+	this->_bossState->SetContext(this);
 }
 
 void Boss::BindHero(Player* phero)
@@ -34,8 +47,6 @@ int Boss::GetFullHP()
 
 void Boss::SetSkill(const std::string &filename)
 {
-	this->skill = filename;
-
 	Vector<SpriteFrame *>loadVector;
 	char name[20];
 
@@ -52,16 +63,12 @@ void Boss::SetSkill(const std::string &filename)
 	}
 
 	sprite->runAction(RepeatForever::create(Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 12.0f))));
-
-	return;
 }
 
 void Boss::Hurt(int atk, int bulletState) //Boss受伤
 {
-	if (getSprite() == NULL)
-	{
-		return;
-	}
+	if (getSprite() == nullptr) return;
+
 	this->HurtingAnimation(atk, bulletState);
 	currentHP -= atk;
 	if (currentHP < 0)
@@ -72,19 +79,14 @@ void Boss::Hurt(int atk, int bulletState) //Boss受伤
 	return;
 }
 
-void Boss::Attack(int num, float scale) //Boss攻击
+void Boss::Attack(int num) //Boss攻击
 {
 	Bullet* bullet = nullptr;
 
 	for (int i = 0; i < num; i++)
 	{
 		//创建子弹
-		bullet = Bullet::create();
-		auto pic = Sprite::createWithSpriteFrameName(this->skill);
-		pic->setScale(scale);
-		bullet->BindSprite(pic);
-		bullet->SetATK(atk);
-		//bullet = Factory::GetInstance()->CreateBullet(BulletType::Ball, scale, this->atk);
+		bullet = Factory::GetInstance()->CreateBullet(BulletType::Ball, this->atk);
 		if (i & 1)
 			bullet->setPosition(this->getPositionX(), this->getPositionY() + count);
 		else
@@ -95,145 +97,86 @@ void Boss::Attack(int num, float scale) //Boss攻击
 		bulletArray.pushBack(bullet);
 
 	}
-
-	return;
 }
 
 void Boss::Aim(float delta) //Boss子弹自动追踪英雄
 {
-	if (bulletArray.empty())
-	{
-		return;
-	}
+	if (bulletArray.empty()) return;
 
 	for (cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin(); bullet != bulletArray.end(); bullet++)
 	{
 		if ((*bullet)->getPositionX() <= hero->getPositionX())
-		{
 			continue;
-		}
+
 		auto move = MoveTo::create(2.0f, hero->getPosition());
 		(*bullet)->runAction(move);
 	}
-	return;
 }
 
 void Boss::update(float delta)
 {
-	if (!bulletArray.empty())
-	{
+	this->_bossState->DetectState();
+	this->_bossState->Move();
+	this->_bossState->Attack();
 
-		count = 0;
-		cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin();
-		while (bullet != bulletArray.end())
-		{
-			if (this->GetCurrentHP() >= this->GetFullHP() * 2 / 3) //Boss血量大于一半时子弹普通向右移动
-			{
-				(*bullet)->setPositionX((*bullet)->getPositionX() - 6 - count % 6);
-			}
-			//Boss子弹开始在Y轴移动
-			else if ((*bullet)->getPositionX() <= hero->getPositionX() || (this->GetCurrentHP() >= this->GetFullHP() / 2))
-			{
-				(*bullet)->setPositionX((*bullet)->getPositionX() - 6 - count % 6);
+	//if (!bulletArray.empty())
+	//{
+	//	count = 0;
+	//	cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin();
+	//	while (bullet != bulletArray.end())
+	//	{
+	//		if (this->GetCurrentHP() >= this->GetFullHP() * 2 / 3) //Boss血量大于一半时子弹普通向右移动
+	//		{
+	//			(*bullet)->setPositionX((*bullet)->getPositionX() - 6 - count % 6);
+	//		}
+	//		//Boss子弹开始在Y轴移动
+	//		else if ((*bullet)->getPositionX() <= hero->getPositionX() || (this->GetCurrentHP() >= this->GetFullHP() / 2))
+	//		{
+	//			(*bullet)->setPositionX((*bullet)->getPositionX() - 6 - count % 6);
 
-				if (count % 2 == 0)
-				{
-					(*bullet)->setPositionY((*bullet)->getPositionY() + 4 + count % 5);
-				}
-				else if (count % 3 == 0)
-				{
-				}
-				else
-				{
-					(*bullet)->setPositionY((*bullet)->getPositionY() - 4 - count % 5);
-				}
-			}
+	//			if (count % 2 == 0)
+	//			{
+	//				(*bullet)->setPositionY((*bullet)->getPositionY() + 4 + count % 5);
+	//			}
+	//			else if (count % 3 != 0)
+	//			{
+	//				(*bullet)->setPositionY((*bullet)->getPositionY() - 4 - count % 5);
+	//			}
+	//		}
 
-			if ((*bullet)->getPositionX() < 0)
-			{
-				(*bullet)->removeFromParentAndCleanup(true);
-				bullet = bulletArray.erase(bullet);
-			}
-			else if (Entity::IsCollideWith(hero, (*bullet)))
-			{
-				hero->Hurt((*bullet)->GetATK());
-				(*bullet)->removeFromParentAndCleanup(true);
-				bullet = bulletArray.erase(bullet);
-			}
-			else
-			{
-				bullet++;
-			}
-			count++;
-		}
-	}
+	//		if ((*bullet)->getPositionX() < 0)
+	//		{
+	//			(*bullet)->removeFromParentAndCleanup(true);
+	//			bullet = bulletArray.erase(bullet);
+	//		}
+	//		else if (Entity::IsCollideWith(hero, (*bullet)))
+	//		{
+	//			hero->Hurt((*bullet)->GetATK());
+	//			(*bullet)->removeFromParentAndCleanup(true);
+	//			bullet = bulletArray.erase(bullet);
+	//		}
+	//		else
+	//			bullet++;
+	//		count++;
+	//	}
+	//}
 
-	if (this->GetCurrentHP() <= this->GetFullHP() / 2 && flag)
-	{
-		flag = false;
-		this->schedule(schedule_selector(Boss::Aim), 2.2f);
-	}
-	return;
+	//if (this->GetCurrentHP() <= this->GetFullHP() / 2 && flag)
+	//{
+	//	flag = false;
+	//	this->schedule(schedule_selector(Boss::Aim), 2.2f);
+	//}
 }
 
 void Boss::HurtingAnimation(int atk, int bulletState)
 {
 	//伤害输出反馈
-	LabelTTF* hurt = LabelTTF::create(String::createWithFormat("Hit %d", atk)->getCString(), "arial", 56);
-	hurt->setColor(Color3B(255, 165, 0));
-	hurt->setPosition(visibleSize.width * 0.8f, 70);
-
-	auto act = Sequence::create(Blink::create(0.8f, 1),
-		CallFunc::create(([hurt](void){
-		hurt->setVisible(false);
-		hurt->removeFromParentAndCleanup(true);
-	})), nullptr);
-
+	LabelTTF* hurt = Factory::GetInstance()->CreateBlinkNotification(FigureType::BOSS, atk);
 	this->getParent()->addChild(hurt);
-	hurt->runAction(act);
-
-	Vector<SpriteFrame *>loadVector;
-	char name[16];
 
 	auto sprite = Sprite::create();  //用于播放动画的精灵
 	sprite->setPosition(this->getContentSize() / 2);
-	sprite->setScale(5.0f);
 	this->addChild(sprite);
 
-	//动画播放完毕后释放内存
-	auto callfun = CallFunc::create(([sprite](void){
-		sprite->setVisible(false);
-		sprite->removeFromParentAndCleanup(true);
-	}));
-
-	switch (bulletState)
-	{
-	case 1:
-		for (int i = 1; i <= 8; i++)
-		{
-			sprintf(name, "red (%d).png", i);
-			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
-		}
-		break;
-	case 2:
-		for (int i = 1; i <= 4; i++)
-		{
-			sprintf(name, "blue (%d).png", i);
-			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
-		}
-		break;
-	case 4:
-		for (int i = 1; i <= 5; i++)
-		{
-			sprintf(name, "green (%d).png", i);
-			loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
-		}
-		sprite->setScale(10.0f); //因为图像大小的不一致需再次调整大小
-		break;
-	default:
-		return;
-	}
-	sprite->runAction(Sequence::create(
-		Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
-		callfun, nullptr));
+	Factory::GetInstance()->CreateHurtingAnimation(FigureType::BOSS, sprite, bulletState);
 }

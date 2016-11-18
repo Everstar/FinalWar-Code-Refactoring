@@ -1,9 +1,7 @@
 #ifndef __Player_H__
 #define __Player_H__
 
-#include "Boss.h"
-#include "Bullet.h"
-#include "Monster.h"
+#include "Factory.h"
 USING_NS_CC;
 
 class Monster;
@@ -12,7 +10,6 @@ class Boss;
 class Player :public Entity
 {
 public:
-	Player();
 	~Player();
 	virtual bool init();
 	CREATE_FUNC(Player);
@@ -24,7 +21,7 @@ public:
 	void SetPower(int atk); //设置英雄攻击力
 	void SetMonsterArray(Vector<Monster* >* Array); //获得小怪数组
 
-	void Attack(float scale);
+	void Attack();
 	void Hurt(int atk);
 	void Move(short x, short y);
 
@@ -41,7 +38,6 @@ private:
 	MoveBy* moveAction;
 	int plistNum;
 	int bulletState;
-	bool bulletLife; //子弹是否存活
 
 	Vector<Bullet* > bulletArray; //子弹数组
 	Vector<Monster* >* monsterArray; //小怪数组

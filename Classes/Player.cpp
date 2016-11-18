@@ -1,21 +1,17 @@
 #include "Player.h"
 
-Player::Player()
+Player::~Player()
+{
+	bulletArray.clear();
+}
+
+bool Player::init()
 {
 	fullHP = 3000;
 	currentHP = fullHP;
 	power = 50;
 	pBoss = nullptr;
 	moveAction = nullptr;
-	bulletLife = false;
-}
-
-Player::~Player()
-{
-}
-
-bool Player::init()
-{
 	this->scheduleUpdate();
 	return true;
 }
@@ -76,9 +72,9 @@ void Player::SetMonsterArray(Vector<Monster* >* Array)
 	this->monsterArray = Array;
 }
 
-void Player::Attack(float scale)
+void Player::Attack()
 {
-	Bullet *bullet = Factory::GetInstance()->CreateBullet(BulletType::Light, scale, this->power);
+	Bullet *bullet = Factory::GetInstance()->CreateBullet(BulletType::Light, this->power);
 	bullet->setPosition(this->getParent()->getPosition());
 	this->getParent()->getParent()->addChild(bullet);
 	bulletArray.pushBack(bullet);
@@ -115,12 +111,10 @@ void Player::update(float delta)
 	//检测子弹
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin();
+	bool bulletLife = false;//子弹是否存活
 	while (bullet != bulletArray.end())
 	{
-		if ((*bullet) == nullptr)
-		{
-			continue;
-		}
+		if ((*bullet) == nullptr) continue;
 
 		bulletLife = true;
 		(*bullet)->setPositionX((*bullet)->getPositionX() + 8);
@@ -137,10 +131,7 @@ void Player::update(float delta)
 			}
 		}
 
-		if (!bulletLife)
-		{
-			return;
-		}
+		if (!bulletLife) return;
 		if ((*bullet)->getPositionX() > visibleSize.width)
 		{
 			(*bullet)->removeFromParentAndCleanup(true);
@@ -153,50 +144,19 @@ void Player::update(float delta)
 			bullet = bulletArray.erase(bullet);
 		}
 		else
-		{
 			bullet++;
-		}
 	}
 	return;
 }
 
 void Player::HurtingAnimation(int atk)
 {
-	LabelTTF* hurt = LabelTTF::create(String::createWithFormat("-%d", atk)->getCString(), "arial", 56);
-	hurt->setColor(Color3B(0xFF, 0, 0));
-	hurt->setPosition(80, Director::getInstance()->getVisibleSize().height - 70);
-
-	auto act = Sequence::create(Blink::create(1.0f, 3),
-		CallFunc::create(([hurt](void){
-		hurt->setVisible(false);
-		hurt->removeFromParentAndCleanup(true);
-	})), nullptr);
-
+	LabelTTF* hurt = Factory::GetInstance()->CreateBlinkNotification(FigureType::Boat, atk);
 	this->getParent()->addChild(hurt);
-	hurt->runAction(act);
-
-	Vector<SpriteFrame *>loadVector;
-	char name[16];
 
 	auto sprite = Sprite::create();
 	sprite->setPosition(this->getContentSize() / 2);
-	sprite->setScale(5.0f);
 	this->addChild(sprite); //用于播放动画的精灵
 
-	auto callfun = CallFunc::create(([sprite](void){
-		sprite->setVisible(false);
-		sprite->removeFromParentAndCleanup(true);
-	}));
-
-	for (int i = 1; i <= 6; i++)
-	{
-		sprintf(name, "hurt (%d).png", i);
-		loadVector.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
-	}
-
-	sprite->runAction(Sequence::create(
-		Animate::create(Animation::createWithSpriteFrames(loadVector, 1 / 24.0f)),
-		callfun, nullptr));
-
-	return;
+	Factory::GetInstance()->CreateHurtingAnimation(FigureType::Boat, sprite);
 }

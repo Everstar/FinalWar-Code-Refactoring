@@ -1,18 +1,56 @@
 #include "Monster.h"
+#include "Factory.h"
+#include "BagSprite.h"
+#include "Banana.h"
+#include "Bat.h"
+#include "ThunderBall.h"
+#include "Donggua.h"
+
+Monster** Monster::prototypes = new Monster*[5];
+byte Monster::prototypeCount = 0;
 
 Monster::Monster()
 {
-	atk = 50;
-	hp = 100;
-}
-
-Monster::~Monster()
-{
+	init();
 }
 
 bool Monster::init()
 {
+	atk = 100;
+	hp = 100;
+	type = MonsterType::Abstract;
 	return true;
+}
+
+void Monster::addPrototype(Monster* monster)
+{
+	if (prototypeCount > 4) return;
+	Monster::prototypes[prototypeCount++] = monster;
+}
+
+Monster* Monster::findAndClone(MonsterType type)
+{
+	return prototypes[type]->clone();
+}
+
+Monster* Monster::clone()
+{
+	return new Monster();
+}
+
+MonsterType Monster::GetMonsterType()
+{
+	return type;
+}
+
+void Monster::addAllPrototypes()
+{
+	//添加小怪原型
+	Monster::addPrototype(BagSprite::Instance->clone());
+	Monster::addPrototype(Banana::Instance->clone());
+	Monster::addPrototype(Bat::Instance->clone());
+	Monster::addPrototype(ThunderBall::Instance->clone());
+	Monster::addPrototype(Donggua::Instance->clone());
 }
 
 void Monster::SetATK(int atk)
@@ -45,19 +83,9 @@ void Monster::LoseLife(int atk)
 	}
 
 	//伤害输出反馈
-	LabelTTF* hurt = LabelTTF::create(String::createWithFormat("Hit %d", atk)->getCString(), "arial", 36);
-	hurt->setColor(Color3B(255, 0, 0));
-	hurt->setPosition(this->getPositionX() + 50, this->getPositionY());
+	LabelTTF* label = Factory::GetInstance()->CreateBlinkNotification(FigureType::MONSTER, atk);
+	label->setPosition(this->getPositionX() + 50, this->getPositionY());
 
-	auto act = Sequence::create(Blink::create(0.8f, 1),
-		CallFunc::create(([hurt](void){
-		hurt->setVisible(false);
-		hurt->removeFromParentAndCleanup(true);
-	})), nullptr);
-
-	this->getParent()->addChild(hurt);
-	hurt->runAction(act);
-
-	return;
+	this->getParent()->addChild(label);
 }
 

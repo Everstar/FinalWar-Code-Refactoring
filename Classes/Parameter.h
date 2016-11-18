@@ -1,6 +1,12 @@
 #ifndef __PARAMETER_H__
 #define __PARAMETER_H__
 
+enum BulletType { Light, Ball };
+
+enum MonsterType { BAGSPRITE, BANANA, BAT, THUNDERBALL, DONGGUA, Abstract};
+
+enum FigureType { Forset, Star, Dragon, Boat, BOSS, MONSTER };
+
 #define PATH_BACKGROUND_FORMER "bg&ui/bg_former.png"
 #define PATH_BACKGROUND_LATTER "bg&ui/bg_latter.png"
 #define PATH_BACKGROUND_PAUSE "bg&ui/bg_pause.png"
