@@ -76,7 +76,8 @@ void Boss::Hurt(int atk, int bulletState) //Boss受伤
 		currentHP = 0;
 	}
 
-	return;
+	this->ObservingData = (float)currentHP / (float)fullHP * 100.0f;
+	this->Notify();
 }
 
 void Boss::Attack(int num) //Boss攻击
@@ -113,59 +114,17 @@ void Boss::Aim(float delta) //Boss子弹自动追踪英雄
 	}
 }
 
+//定时释放子弹攻击
+void Boss::ReleaseBullets(float delta)
+{
+	this->Attack(_bossState->_state + 2);
+}
+
 void Boss::update(float delta)
 {
 	this->_bossState->DetectState();
 	this->_bossState->Move();
 	this->_bossState->Attack();
-
-	//if (!bulletArray.empty())
-	//{
-	//	count = 0;
-	//	cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin();
-	//	while (bullet != bulletArray.end())
-	//	{
-	//		if (this->GetCurrentHP() >= this->GetFullHP() * 2 / 3) //Boss血量大于一半时子弹普通向右移动
-	//		{
-	//			(*bullet)->setPositionX((*bullet)->getPositionX() - 6 - count % 6);
-	//		}
-	//		//Boss子弹开始在Y轴移动
-	//		else if ((*bullet)->getPositionX() <= hero->getPositionX() || (this->GetCurrentHP() >= this->GetFullHP() / 2))
-	//		{
-	//			(*bullet)->setPositionX((*bullet)->getPositionX() - 6 - count % 6);
-
-	//			if (count % 2 == 0)
-	//			{
-	//				(*bullet)->setPositionY((*bullet)->getPositionY() + 4 + count % 5);
-	//			}
-	//			else if (count % 3 != 0)
-	//			{
-	//				(*bullet)->setPositionY((*bullet)->getPositionY() - 4 - count % 5);
-	//			}
-	//		}
-
-	//		if ((*bullet)->getPositionX() < 0)
-	//		{
-	//			(*bullet)->removeFromParentAndCleanup(true);
-	//			bullet = bulletArray.erase(bullet);
-	//		}
-	//		else if (Entity::IsCollideWith(hero, (*bullet)))
-	//		{
-	//			hero->Hurt((*bullet)->GetATK());
-	//			(*bullet)->removeFromParentAndCleanup(true);
-	//			bullet = bulletArray.erase(bullet);
-	//		}
-	//		else
-	//			bullet++;
-	//		count++;
-	//	}
-	//}
-
-	//if (this->GetCurrentHP() <= this->GetFullHP() / 2 && flag)
-	//{
-	//	flag = false;
-	//	this->schedule(schedule_selector(Boss::Aim), 2.2f);
-	//}
 }
 
 void Boss::HurtingAnimation(int atk, int bulletState)

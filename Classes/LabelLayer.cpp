@@ -1,4 +1,5 @@
 #include "LabelLayer.h"
+#include "FinalWar.h"
 #include "Parameter.h"
 #include "SimpleAudioEngine.h"
 using CocosDenshion::SimpleAudioEngine;
@@ -6,9 +7,30 @@ using CocosDenshion::SimpleAudioEngine;
 bool LabelLayer::init()
 {
 	if (!Layer::init())
-	{
 		return false;
-	}
+	
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_FIRE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_LASER);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_ICE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_BOMB);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BOSSBACK_MAGICCIRCLE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BULLET_FIRE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BULLET_ICE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BULLET_LASER);
+	Director::getInstance()->getTextureCache()->addImage(PATH_BULLET_SIZE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_PLAYER_FIGURE);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_MONSTER_FIGURE);
+
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_UI_HPLABEL);
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_UI_MENUITEM);
+	Director::getInstance()->getTextureCache()->addImage(PATH_BACKGROUND_PAUSE);
+	Director::getInstance()->getTextureCache()->addImage(PATH_BACKGROUND_FORMER);
+	Director::getInstance()->getTextureCache()->addImage(PATH_BACKGROUND_LATTER);
+
+	SimpleAudioEngine::getInstance()->preloadEffect(PATH_AUDIO_FIRE);
+	SimpleAudioEngine::getInstance()->preloadEffect(PATH_AUDIO_ICE);
+	SimpleAudioEngine::getInstance()->preloadEffect(PATH_AUDIO_LASER);
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic(PATH_AUDIO_BACKGROUND);
 
 	visibleSize = Director::getInstance()->getVisibleSize();
 
@@ -52,9 +74,9 @@ float LabelLayer::GetScore()
 
 void LabelLayer::update(float delta)
 {
-	hpBarblood_H->setPercentage((float)hero->GetCurrentHP() / (float)hero->GetFullHP() * 100);
+	//hpBarblood_H->setPercentage((float)gamerlayer-> hero->GetCurrentHP() / (float)hero->GetFullHP() * 100);
 
-	hpBarblood_B->setPercentage((float)boss->GetCurrentHP() / (float)boss->GetFullHP() * 100);
+	//hpBarblood_B->setPercentage((float)boss->GetCurrentHP() / (float)boss->GetFullHP() * 100);
 
 	// 检查暂停界面按钮是否删除
 	if (flagResume)
@@ -63,18 +85,6 @@ void LabelLayer::update(float delta)
 		flagResume = !flagResume;
 	}
 
-	return;
-}
-
-void LabelLayer::BindHero(Player* phero)
-{
-	this->hero = phero;
-	return;
-}
-
-void LabelLayer::BindBoss(Boss* pboss)
-{
-	this->boss = pboss;
 	return;
 }
 
@@ -107,7 +117,6 @@ void LabelLayer::MusicOn(Ref* ref)
 	musicOnLabel->setVisible(false);
 	musicOffLabel->setEnabled(true);
 	musicOffLabel->setVisible(true);
-	return;
 }
 
 void LabelLayer::MusicOff(Ref* ref)
@@ -118,44 +127,48 @@ void LabelLayer::MusicOff(Ref* ref)
 	musicOnLabel->setVisible(true);
 	musicOffLabel->setEnabled(false);
 	musicOffLabel->setVisible(false);
-	return;
 }
 
 void LabelLayer::CreateHPLabel() //血量条
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
+
+	hpPlayer = HPBar::CreateWithInit(FigureType::Boat);
+	this->addChild(hpPlayer, 1);
+
+	hpBoss = HPBar::CreateWithInit(FigureType::BOSS);
+	//hpBoss->setPosition(visibleSize.width / 2, 46);
+	this->addChild(hpBoss, 1);
 	
-	//Hero
-	hpBar_H = Sprite::createWithSpriteFrameName(PATH_UI_PALYER_HPBAR); //背景框
-	hpBar_H->setPosition(210, visibleSize.height - 46);
-	this->addChild(hpBar_H, 1);
+	////Hero
+	//hpBar_H = Sprite::createWithSpriteFrameName(PATH_UI_PALYER_HPBAR); //背景框
+	//hpBar_H->setPosition(210, visibleSize.height - 46);
+	//this->addChild(hpBar_H, 1);
 
-	hpBarblood_H = ProgressTimer::create(Sprite::createWithSpriteFrameName(PATH_UI_PALYER_HPBARBLOOD)); //血量条
-	hpBarblood_H->setType(ProgressTimer::Type::BAR); //条形模式
-	hpBarblood_H->setMidpoint(Point(0, 0.5f)); //进度条起始位置
-	hpBarblood_H->setBarChangeRate(Point(1,0)); //表示沿X轴变化
-	hpBarblood_H->setPercentage(100);
-	hpBarblood_H->setPosition(Point(0, 0));
-	hpBarblood_H->setAnchorPoint(Point(0, 0));
+	//hpBarblood_H = ProgressTimer::create(Sprite::createWithSpriteFrameName(PATH_UI_PALYER_HPBARBLOOD)); //血量条
+	//hpBarblood_H->setType(ProgressTimer::Type::BAR); //条形模式
+	//hpBarblood_H->setMidpoint(Point(0, 0.5f)); //进度条起始位置
+	//hpBarblood_H->setBarChangeRate(Point(1,0)); //表示沿X轴变化
+	//hpBarblood_H->setPercentage(100);
+	//hpBarblood_H->setPosition(Point(0, 0));
+	//hpBarblood_H->setAnchorPoint(Point(0, 0));
 
-	hpBar_H->addChild(hpBarblood_H);
+	//hpBar_H->addChild(hpBarblood_H);
 
-	//Boss zijian
-	hpBar_B = Sprite::createWithSpriteFrameName(PATH_UI_BOSS_HPBAR); //背景框
-	hpBar_B->setPosition(visibleSize.width / 2, 46);
-	this->addChild(hpBar_B, 1);
+	////Boss zijian
+	//hpBar_B = Sprite::createWithSpriteFrameName(PATH_UI_BOSS_HPBAR); //背景框
+	//hpBar_B->setPosition(visibleSize.width / 2, 46);
+	//this->addChild(hpBar_B, 1);
 
-	hpBarblood_B = ProgressTimer::create(Sprite::createWithSpriteFrameName(PATH_UI_BOSS_HPBARBLOOD)); //血量条
-	hpBarblood_B->setType(ProgressTimer::Type::BAR); //条形模式
-	hpBarblood_B->setMidpoint(Point(0, 0.5f)); //进度条起始位置
-	hpBarblood_B->setBarChangeRate(Point(1, 0)); //表示沿X轴变化
-	hpBarblood_B->setPercentage(100);
-	hpBarblood_B->setPosition(Point(0, 0));
-	hpBarblood_B->setAnchorPoint(Point(0, 0));
+	//hpBarblood_B = ProgressTimer::create(Sprite::createWithSpriteFrameName(PATH_UI_BOSS_HPBARBLOOD)); //血量条
+	//hpBarblood_B->setType(ProgressTimer::Type::BAR); //条形模式
+	//hpBarblood_B->setMidpoint(Point(0, 0.5f)); //进度条起始位置
+	//hpBarblood_B->setBarChangeRate(Point(1, 0)); //表示沿X轴变化
+	//hpBarblood_B->setPercentage(100);
+	//hpBarblood_B->setPosition(Point(0, 0));
+	//hpBarblood_B->setAnchorPoint(Point(0, 0));
 
-	hpBar_B->addChild(hpBarblood_B);
-
-	return;
+	//hpBar_B->addChild(hpBarblood_B);
 }
 
 void LabelLayer::pauseScene()
@@ -224,8 +237,6 @@ void LabelLayer::pauseScene()
 	addChild(menu, 6);
 
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(pauseListener, this);
-
-	return;
 }
 
 void LabelLayer::resumeScene()
@@ -238,5 +249,4 @@ void LabelLayer::resumeScene()
 	Director::getInstance()->resume();
 	Director::getInstance()->getEventDispatcher()->removeEventListener(pauseListener);
 	Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(gamerlayer);
-	return;
 }

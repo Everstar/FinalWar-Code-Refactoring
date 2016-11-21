@@ -7,6 +7,8 @@ enum MonsterType { BAGSPRITE, BANANA, BAT, THUNDERBALL, DONGGUA, Abstract};
 
 enum FigureType { Forset, Star, Dragon, Boat, BOSS, MONSTER };
 
+enum BossStateType {Boring, Excited, Insane};
+
 #define PATH_BACKGROUND_FORMER "bg&ui/bg_former.png"
 #define PATH_BACKGROUND_LATTER "bg&ui/bg_latter.png"
 #define PATH_BACKGROUND_PAUSE "bg&ui/bg_pause.png"
@@ -46,5 +48,9 @@ enum FigureType { Forset, Star, Dragon, Boat, BOSS, MONSTER };
 #define PATH_MONSTER_THUNDERBALL "F_ThunderBall.png"
 #define PATH_MONSTER_DONGGUA "F_Donggua.png"
 
+#define PATH_AUDIO_LASER "audio/laser.wav"
+#define PATH_AUDIO_ICE "audio/ice.wav"
+#define PATH_AUDIO_FIRE "audio/fire.wav"
+#define PATH_AUDIO_BACKGROUND "audio/BGMActive.mp3"
 
 #endif

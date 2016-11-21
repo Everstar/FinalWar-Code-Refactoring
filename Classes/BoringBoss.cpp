@@ -5,6 +5,13 @@ BoringBoss::BoringBoss()
 {
 	visibleSize = Director::getInstance()->getVisibleSize();
 	updown = true;
+
+	_state = BossStateType::Boring;
+}
+
+void BoringBoss::init()
+{
+	_context->schedule(schedule_selector(Boss::ReleaseBullets), 1.2f);
 }
 
 void BoringBoss::DetectState()

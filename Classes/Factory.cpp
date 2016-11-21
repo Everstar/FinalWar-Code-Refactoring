@@ -22,7 +22,7 @@ Player* Factory::CreatePlayer(FigureType type)
 	{
 	case Forset:
 		player->BindSprite(Sprite::createWithSpriteFrameName("B_sensen.png"));
-		player->SetBullet(5, 4);
+		player->SetType(5, 4, type);
 		player->setScale(0.1f);
 		player->SetPower(50);
 		player->setPosition(80, 80);
@@ -31,7 +31,7 @@ Player* Factory::CreatePlayer(FigureType type)
 		break;
 	case Star:
 		player->BindSprite(Sprite::createWithSpriteFrameName("B_littlestar.png"));
-		player->SetBullet(3, 2);
+		player->SetType(3, 2, type);
 		player->setScale(0.1f);
 		player->SetPower(40);
 		player->setPosition(120, 85);
@@ -40,7 +40,7 @@ Player* Factory::CreatePlayer(FigureType type)
 		break;
 	case Dragon:
 		player->BindSprite(Sprite::createWithSpriteFrameName("B_huolong.png"));
-		player->SetBullet(4, 1);
+		player->SetType(4, 1, type);
 		player->setScale(0.1f);
 		player->SetPower(60);
 		player->setPosition(105, 120);

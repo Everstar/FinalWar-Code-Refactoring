@@ -6,7 +6,13 @@ InsaneBoss::InsaneBoss()
 	updown = true;
 	leftright = true;
 
-	//_context->schedule(schedule_selector(Boss::Aim), 2.2f, CC_REPEAT_FOREVER, 1.0f);
+	_state = BossStateType::Insane;
+}
+
+void InsaneBoss::init()
+{
+	_context->schedule(schedule_selector(Boss::ReleaseBullets), 1.3f);
+	_context->schedule(schedule_selector(Boss::Aim), 2.2f);
 }
 
 void InsaneBoss::DetectState(){}

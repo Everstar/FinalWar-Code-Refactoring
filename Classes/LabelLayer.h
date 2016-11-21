@@ -2,23 +2,18 @@
 #define __LABELLAYER_H__
 
 #include "cocos2d.h"
-#include "Player.h" 
-#include "FinalWar.h"
-#include "Boss.h"
+#include "HPBar.h"
 USING_NS_CC;
-
-class Player;
-class FinalWar;
 
 class LabelLayer : public Layer
 {
 public:
-	virtual bool init();
+	bool init();
 	void pauseScene();
 	void resumeScene();
 	CREATE_FUNC(LabelLayer);
 public:
-	FinalWar* gamerlayer;
+	Layer* gamerlayer;
 
 	void SetScore(float grade);
 	float GetScore();
@@ -29,8 +24,8 @@ public:
 	void MusicOff(Ref* ref);
 	void initMusic();
 
-	void BindHero(Player* phero);
-	void BindBoss(Boss* pboss);
+	HPBar* hpPlayer;
+	HPBar* hpBoss;
 private:
 	Size visibleSize;
 
@@ -38,8 +33,8 @@ private:
 	MenuItemImage* musicOffLabel;
 	Menu* musicMenu;
 
-	Player* hero;
-	Boss* boss;
+	//Player* hero;
+	//Boss* boss;
 
 	float score; //·ÖÊý
 

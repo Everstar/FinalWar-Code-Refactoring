@@ -2,12 +2,14 @@
 #define __Player_H__
 
 #include "Factory.h"
+#include "Parameter.h"
+#include "Observable.h"
 USING_NS_CC;
 
 class Monster;
 class Boss;
 
-class Player :public Entity
+class Player :public Entity, public Observable
 {
 public:
 	~Player();
@@ -25,11 +27,13 @@ public:
 	void Hurt(int atk);
 	void Move(short x, short y);
 
-	void SetBullet(int num, int state); //设置子弹动画源文件 动画帧数 子弹种类
+	void SetType(int num, int state, FigureType); //设置子弹动画源文件 动画帧数 子弹种类
 	void HurtingAnimation(int atk); //受伤动画
 
 	void update(float delta);
 private:
+	FigureType _type;
+
 	int fullHP;
 	int currentHP;
 	int power;

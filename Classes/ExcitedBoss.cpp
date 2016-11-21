@@ -6,6 +6,13 @@ ExcitedBoss::ExcitedBoss()
 	visibleSize = Director::getInstance()->getVisibleSize();
 	updown = true;
 	leftright = true;
+
+	_state = BossStateType::Excited;
+}
+
+void ExcitedBoss::init()
+{
+	_context->schedule(schedule_selector(Boss::ReleaseBullets), 1.1f);
 }
 
 void ExcitedBoss::DetectState()

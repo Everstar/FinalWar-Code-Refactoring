@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "SimpleAudioEngine.h"
+using CocosDenshion::SimpleAudioEngine;
 
 Player::~Player()
 {
@@ -56,14 +58,13 @@ void Player::Move(short x, short y)
 
 	moveAction = MoveBy::create(0.3f, Vec2(15 * x, y * 15));
 	this->runAction(RepeatForever::create(moveAction));
-
-	return;
 }
 
-void Player::SetBullet(int num, int state)
+void Player::SetType(int num, int state, FigureType type)
 {
 	plistNum = num;
 	bulletState = state;
+	_type = type;
 	return;
 }
 
@@ -81,7 +82,20 @@ void Player::Attack()
 
 	bullet->Play(plistNum, bulletState);
 
-	return;
+	switch (_type)
+	{
+	case Forset:
+		SimpleAudioEngine::getInstance()->playEffect(PATH_AUDIO_LASER);
+		break;
+	case Star:
+		SimpleAudioEngine::getInstance()->playEffect(PATH_AUDIO_ICE);
+		break;
+	case Dragon:
+		SimpleAudioEngine::getInstance()->playEffect(PATH_AUDIO_FIRE);
+		break;
+	default:
+		break;
+	}
 }
 
 void Player::Hurt(int atk)
@@ -98,15 +112,13 @@ void Player::Hurt(int atk)
 		currentHP = fullHP;
 	}
 
-	return;
+	this->ObservingData = (float)currentHP / (float)fullHP * 100.0f;
+	this->Notify();
 }
 
 void Player::update(float delta)
 {
-	if (bulletArray.empty())
-	{
-		return;
-	}
+	if (bulletArray.empty()) return;
 
 	//¼ì²â×Óµ¯
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -146,7 +158,6 @@ void Player::update(float delta)
 		else
 			bullet++;
 	}
-	return;
 }
 
 void Player::HurtingAnimation(int atk)

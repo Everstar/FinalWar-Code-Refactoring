@@ -4,13 +4,14 @@
 #include "BossState.h"
 #include "Bullet.h"
 #include "Factory.h"
+#include "Observable.h"
 USING_NS_CC;
 
 class Bullet;
 class Player;
 class BossState;
 
-class Boss : public Entity
+class Boss : public Entity, public Observable
 {
 public:
 	bool init();
@@ -32,6 +33,7 @@ public:
 	void HurtingAnimation(int atk, int bulletState);
 
 	void Aim(float delta);
+	void ReleaseBullets(float delta);
 	void update(float delta);
 
 	void SetBossState(BossState*);

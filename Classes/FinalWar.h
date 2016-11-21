@@ -8,6 +8,7 @@
 #include "LabelLayer.h"
 #include "Parameter.h"
 #include "Factory.h"
+#include "Observable.h"
 USING_NS_CC;
 
 class LabelLayer;
@@ -29,20 +30,19 @@ public:
 	void Win();
 	void Turn();
 	void update(float delta);
-	void BossAttack(float delta);
 	void MonsterAttack(float delta);
 	void ReleaseMonster(MonsterType type);
 	void onKeyPressed(EventKeyboard::KeyCode keycode, Event* event);
 private:
 	Size visibleSize;
-	LabelLayer* labellayer;
+	static LabelLayer* labellayer;
 
 	Sprite* backgroundOne;
 	Sprite* backgroundTwo;
 
 	Boss* zijian;
-	Vector<Monster* > monsterArray;
 	Player* boat;
+	Vector<Monster* > monsterArray;
 	Player* dragon;
 	Player* forset;
 	Player* star;

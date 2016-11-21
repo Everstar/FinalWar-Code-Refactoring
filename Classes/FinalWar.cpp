@@ -1,12 +1,14 @@
 #include "FinalWar.h"
-USING_NS_CC;
+#include "SimpleAudioEngine.h"
+using CocosDenshion::SimpleAudioEngine;
+
 #define MONSTER_NUM 7
+
+LabelLayer* FinalWar::labellayer = nullptr;
 
 FinalWar::FinalWar()
 {
 	monsterNum = -1;
-
-	labellayer = nullptr;
 
 	turned = 1;
 
@@ -26,14 +28,13 @@ FinalWar::FinalWar()
 Scene* FinalWar::createScene()
 {
     auto scene = Scene::create();
+	auto labellayer = LabelLayer::create();
+	scene->addChild(labellayer, 1);
+	FinalWar::labellayer = labellayer;
     auto layer = FinalWar::create();
-	layer->labellayer = LabelLayer::create();
-    scene->addChild(layer);
-	scene->addChild(layer->labellayer);
+    scene->addChild(layer, 0);
 
-	//分数层绑定人物 获取人物信息。
-	layer->labellayer->BindHero(layer->boat);
-	layer->labellayer->BindBoss(layer->zijian);
+	//分数层绑定游戏层 实现暂停操作
 	layer->labellayer->gamerlayer = layer;
 
     return scene;
@@ -43,24 +44,6 @@ bool FinalWar::init()
 {
     if ( !Layer::init() )
         return false;
-
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_FIRE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_LASER);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_ICE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_HURTANIMATION_BOMB);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BOSSBACK_MAGICCIRCLE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BULLET_FIRE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BULLET_ICE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_BULLET_LASER);
-	Director::getInstance()->getTextureCache()->addImage(PATH_BULLET_SIZE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_PLAYER_FIGURE);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_MONSTER_FIGURE);
-
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_UI_HPLABEL);
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile(PATH_UI_MENUITEM);
-	Director::getInstance()->getTextureCache()->addImage(PATH_BACKGROUND_PAUSE);
-	Director::getInstance()->getTextureCache()->addImage(PATH_BACKGROUND_FORMER);
-	Director::getInstance()->getTextureCache()->addImage(PATH_BACKGROUND_LATTER);
 
     visibleSize = Director::getInstance()->getVisibleSize();
 
@@ -88,7 +71,7 @@ void FinalWar::initBG()
 	backgroundTwo->setPosition(visibleSize.width * 3 / 2, visibleSize.height / 2);
 	this->addChild(backgroundTwo, 0);
 
-	return;
+	SimpleAudioEngine::getInstance()->playBackgroundMusic(PATH_AUDIO_BACKGROUND, true);
 }
 
 void FinalWar::initRole()
@@ -119,7 +102,9 @@ void FinalWar::initRole()
 	dragon->SetMonsterArray(&monsterArray);
 	forset->SetMonsterArray(&monsterArray);
 
-	this->schedule(schedule_selector(FinalWar::BossAttack), 1.2f);
+	boat->Attach(labellayer->hpPlayer);
+	zijian->Attach(labellayer->hpBoss);
+
 	this->schedule(schedule_selector(FinalWar::MonsterAttack), 10.2f);
 	this->schedule(schedule_selector(FinalWar::Rotate), 8.0f);
 
@@ -197,20 +182,6 @@ void FinalWar::update(float delta)
 	}
 }
 
-void FinalWar::BossAttack(float delta)
-{
-	int num = 2;
-	if (zijian->GetCurrentHP() <= (zijian->GetFullHP() / 2))
-	{
-		num = 3;
-	}
-	else if (zijian->GetCurrentHP() <= (zijian->GetFullHP() / 4))
-	{
-		num = 4;
-	}
-	zijian->Attack(num);
-}
-
 void FinalWar::MonsterAttack(float delta)
 {
 	this->ReleaseMonster(MonsterType(++monsterNum));
@@ -273,7 +244,7 @@ void FinalWar::onKeyPressed(EventKeyboard::KeyCode keycode, Event* event)
 		boat->SetCurrentHP(0);
 		break;
 	case (EventKeyboard::KeyCode::KEY_M) :
-		zijian->Hurt(4999, 1);
+		zijian->Hurt(1999, 1);
 		break;
 		//测试用================================End
 
