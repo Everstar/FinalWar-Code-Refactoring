@@ -5,6 +5,7 @@
 #include "Bullet.h"
 #include "Factory.h"
 #include "Observable.h"
+#include "ilist.h"
 USING_NS_CC;
 
 class Bullet;
@@ -38,7 +39,7 @@ public:
 
 	void SetBossState(BossState*);
 public:
-	Vector<Bullet* > bulletArray;
+	ilist<Bullet* > bulletArray;
 	Player* hero;
 private:
 	BossState* _bossState;

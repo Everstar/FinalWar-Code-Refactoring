@@ -55,7 +55,7 @@ void InsaneBoss::Attack()
 	byte count = 0;
 	if (!_context->bulletArray.empty())
 	{
-		cocos2d::Vector<Bullet*>::iterator bullet = _context->bulletArray.begin();
+		ilist<Bullet* >::listIterator bullet = _context->bulletArray.begin();
 		while (bullet != _context->bulletArray.end())
 		{
 			if ((*bullet)->getPositionX() <= _context->hero->getPositionX())

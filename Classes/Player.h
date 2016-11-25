@@ -4,6 +4,7 @@
 #include "Factory.h"
 #include "Parameter.h"
 #include "Observable.h"
+#include "ilist.h"
 USING_NS_CC;
 
 class Monster;
@@ -21,7 +22,7 @@ public:
 	int GetFullHP();
 	void SetCurrentHP(int hp);
 	void SetPower(int atk); //设置英雄攻击力
-	void SetMonsterArray(Vector<Monster* >* Array); //获得小怪数组
+	void SetMonsterArray(ilist<Monster* >* Array); //获得小怪数组
 
 	void Attack();
 	void Hurt(int atk);
@@ -43,8 +44,8 @@ private:
 	int plistNum;
 	int bulletState;
 
-	Vector<Bullet* > bulletArray; //子弹数组
-	Vector<Monster* >* monsterArray; //小怪数组
+	ilist<Bullet* > bulletArray; //子弹数组
+	ilist<Monster* >* monsterArray; //小怪数组
 };
 
 

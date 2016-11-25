@@ -68,7 +68,7 @@ void Player::SetType(int num, int state, FigureType type)
 	return;
 }
 
-void Player::SetMonsterArray(Vector<Monster* >* Array)
+void Player::SetMonsterArray(ilist<Monster* >* Array)
 {
 	this->monsterArray = Array;
 }
@@ -122,7 +122,7 @@ void Player::update(float delta)
 
 	//检测子弹
 	Size visibleSize = Director::getInstance()->getVisibleSize();
-	cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin();
+	ilist<Bullet* >::listIterator bullet = bulletArray.begin();
 	bool bulletLife = false;//子弹是否存活
 	while (bullet != bulletArray.end())
 	{
@@ -131,11 +131,12 @@ void Player::update(float delta)
 		bulletLife = true;
 		(*bullet)->setPositionX((*bullet)->getPositionX() + 8);
 
-		for (int i = 0; i < monsterArray->size(); i++)
+		ilist<Monster* >::listIterator monster = monsterArray->begin();
+		for (; monster != monsterArray->end(); monster++)
 		{
-			if ((*bullet)->getBoundingBox().intersectsRect(monsterArray->at(i)->getBoundingBox()))
+			if ((*bullet)->getBoundingBox().intersectsRect((*monster)->getBoundingBox()))
 			{
-				monsterArray->at(i)->LoseLife(power);
+				(*monster)->LoseLife(power);
 				(*bullet)->removeFromParentAndCleanup(true);
 				bullet = bulletArray.erase(bullet);
 				bulletLife = false;

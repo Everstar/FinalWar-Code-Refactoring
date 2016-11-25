@@ -104,7 +104,7 @@ void Boss::Aim(float delta) //Boss×Óµ¯×Ô¶¯×·×ÙÓ¢ÐÛ
 {
 	if (bulletArray.empty()) return;
 
-	for (cocos2d::Vector<Bullet*>::iterator bullet = bulletArray.begin(); bullet != bulletArray.end(); bullet++)
+	for (ilist<Bullet* >::listIterator bullet = bulletArray.begin(); bullet != bulletArray.end(); bullet++)
 	{
 		if ((*bullet)->getPositionX() <= hero->getPositionX())
 			continue;

@@ -9,6 +9,7 @@
 #include "Parameter.h"
 #include "Factory.h"
 #include "Observable.h"
+#include "ilist.h"
 USING_NS_CC;
 
 class LabelLayer;
@@ -42,7 +43,7 @@ private:
 
 	Boss* zijian;
 	Player* boat;
-	Vector<Monster* > monsterArray;
+	ilist<Monster* > monsterArray;
 	Player* dragon;
 	Player* forset;
 	Player* star;

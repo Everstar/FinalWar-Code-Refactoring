@@ -107,8 +107,6 @@ void FinalWar::initRole()
 
 	this->schedule(schedule_selector(FinalWar::MonsterAttack), 10.2f);
 	this->schedule(schedule_selector(FinalWar::Rotate), 8.0f);
-
-	return;
 }
 
 void FinalWar::RollingBackground() {	//±³¾°ÒÆ¶¯
@@ -153,7 +151,7 @@ void FinalWar::update(float delta)
 
 	if (!monsterArray.empty())
 	{
-		cocos2d::Vector<Monster* >::iterator monster = monsterArray.begin();
+		ilist<Monster* >::listIterator monster = monsterArray.begin();
 		while (monster != monsterArray.end())
 		{
 			//ÅÐ¶ÏÐ¡¹ÖÎ»ÖÃ
@@ -251,7 +249,6 @@ void FinalWar::onKeyPressed(EventKeyboard::KeyCode keycode, Event* event)
 	default:
 		return;
 	}
-	return;
 }
 
 void FinalWar::Turn() //ÆÁÄ»·­×ª
@@ -259,14 +256,12 @@ void FinalWar::Turn() //ÆÁÄ»·­×ª
 	auto turn = RotateBy::create(1.0f, 180);
 	this->runAction(turn);
 	turned = -turned;
-	return;
 }
 
 void FinalWar::Move(short x, short y) //Ó¢ÐÛÒÆ¶¯
 {
 	auto moveAction = MoveBy::create(0.3f, Vec2(15 * x, y * 15));
 	boat->runAction(moveAction);
-	return;
 }
 
 void FinalWar::Rotate(float delta) //Ó¢ÐÛÂÖ»»Ò»¸öÎ»ÖÃ
@@ -292,7 +287,6 @@ void FinalWar::Rotate(float delta) //Ó¢ÐÛÂÖ»»Ò»¸öÎ»ÖÃ
 
 	auto rotate = RotateTo::create(1.2f, boat->getRotation() + 120);
 	boat->runAction(rotate);
-	return;
 }
 
 void FinalWar::GameOver(bool win)

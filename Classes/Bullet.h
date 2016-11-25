@@ -8,7 +8,7 @@ class Bullet : public Entity
 public:
 	Bullet();
 	CREATE_FUNC(Bullet);
-	virtual bool init();
+	bool init();
 public:
 	void Play(int num, int state);
 	void SetATK(int atk); //…Ë÷√π•ª˜¡¶

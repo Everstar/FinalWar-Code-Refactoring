@@ -18,8 +18,6 @@ public:
 	void SetScore(float grade);
 	float GetScore();
 
-	void update(float delta);
-
 	void MusicOn(Ref* ref);
 	void MusicOff(Ref* ref);
 	void initMusic();
@@ -33,22 +31,11 @@ private:
 	MenuItemImage* musicOffLabel;
 	Menu* musicMenu;
 
-	//Player* hero;
-	//Boss* boss;
-
 	float score; //·ÖÊý
-
-	//ÑªÁ¿
-	ProgressTimer* hpBarblood_H;
-	Sprite* hpBar_H;
-
-	ProgressTimer* hpBarblood_B;
-	Sprite* hpBar_B;
 
 	void CreateHPLabel();
 
 	bool flagPause;
-	bool flagResume;
 	bool flagMusic;
 
 	Sprite* pauseMainUI;

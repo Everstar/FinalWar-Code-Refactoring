@@ -35,7 +35,6 @@ bool LabelLayer::init()
 	visibleSize = Director::getInstance()->getVisibleSize();
 
 	flagPause = true;
-	flagResume = false;
 	flagMusic = true;
 
 	auto line = Sprite::create(PATH_BACKGROUND_FRAME);  //边框
@@ -49,14 +48,13 @@ bool LabelLayer::init()
 	pauseListener->onKeyPressed = [=](EventKeyboard::KeyCode code, Event *e){
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE && flagPause)
 		{
-			flagPause = !flagPause;
+			flagPause = false;
 			pauseScene();
 		}
 	};
 
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(pauseListener, this);
 	this->initMusic();
-	this->scheduleUpdate();
 
 	return true;
 }
@@ -64,28 +62,11 @@ bool LabelLayer::init()
 void LabelLayer::SetScore(float grade)
 {
 	this->score = grade;
-	return;
 }
 
 float LabelLayer::GetScore()
 {
 	return score;
-}
-
-void LabelLayer::update(float delta)
-{
-	//hpBarblood_H->setPercentage((float)gamerlayer-> hero->GetCurrentHP() / (float)hero->GetFullHP() * 100);
-
-	//hpBarblood_B->setPercentage((float)boss->GetCurrentHP() / (float)boss->GetFullHP() * 100);
-
-	// 检查暂停界面按钮是否删除
-	if (flagResume)
-	{
-		removeChild(menu);
-		flagResume = !flagResume;
-	}
-
-	return;
 }
 
 void LabelLayer::initMusic() //设置音乐菜单
@@ -105,8 +86,6 @@ void LabelLayer::initMusic() //设置音乐菜单
 	musicMenu->setPosition(visibleSize.width * 0.88f, visibleSize.height * 0.10f);
 
 	this->addChild(musicMenu, 1);
-
-	return;
 }
 
 void LabelLayer::MusicOn(Ref* ref)
@@ -137,38 +116,7 @@ void LabelLayer::CreateHPLabel() //血量条
 	this->addChild(hpPlayer, 1);
 
 	hpBoss = HPBar::CreateWithInit(FigureType::BOSS);
-	//hpBoss->setPosition(visibleSize.width / 2, 46);
 	this->addChild(hpBoss, 1);
-	
-	////Hero
-	//hpBar_H = Sprite::createWithSpriteFrameName(PATH_UI_PALYER_HPBAR); //背景框
-	//hpBar_H->setPosition(210, visibleSize.height - 46);
-	//this->addChild(hpBar_H, 1);
-
-	//hpBarblood_H = ProgressTimer::create(Sprite::createWithSpriteFrameName(PATH_UI_PALYER_HPBARBLOOD)); //血量条
-	//hpBarblood_H->setType(ProgressTimer::Type::BAR); //条形模式
-	//hpBarblood_H->setMidpoint(Point(0, 0.5f)); //进度条起始位置
-	//hpBarblood_H->setBarChangeRate(Point(1,0)); //表示沿X轴变化
-	//hpBarblood_H->setPercentage(100);
-	//hpBarblood_H->setPosition(Point(0, 0));
-	//hpBarblood_H->setAnchorPoint(Point(0, 0));
-
-	//hpBar_H->addChild(hpBarblood_H);
-
-	////Boss zijian
-	//hpBar_B = Sprite::createWithSpriteFrameName(PATH_UI_BOSS_HPBAR); //背景框
-	//hpBar_B->setPosition(visibleSize.width / 2, 46);
-	//this->addChild(hpBar_B, 1);
-
-	//hpBarblood_B = ProgressTimer::create(Sprite::createWithSpriteFrameName(PATH_UI_BOSS_HPBARBLOOD)); //血量条
-	//hpBarblood_B->setType(ProgressTimer::Type::BAR); //条形模式
-	//hpBarblood_B->setMidpoint(Point(0, 0.5f)); //进度条起始位置
-	//hpBarblood_B->setBarChangeRate(Point(1, 0)); //表示沿X轴变化
-	//hpBarblood_B->setPercentage(100);
-	//hpBarblood_B->setPosition(Point(0, 0));
-	//hpBarblood_B->setAnchorPoint(Point(0, 0));
-
-	//hpBar_B->addChild(hpBarblood_B);
 }
 
 void LabelLayer::pauseScene()
@@ -189,11 +137,9 @@ void LabelLayer::pauseScene()
 
 	// ESC返回游戏
 	pauseListener = EventListenerKeyboard::create();
-	pauseListener->onKeyPressed = [=](EventKeyboard::KeyCode code, Event *e){
+	pauseListener->onKeyPressed = [&](EventKeyboard::KeyCode code, Event *e){
 		if (code == EventKeyboard::KeyCode::KEY_ESCAPE && !flagPause)
-		{
 			resumeScene();
-		}
 	};
 
 	// 创建返回游戏按钮
@@ -219,15 +165,11 @@ void LabelLayer::pauseScene()
 	auto musicSprite = Sprite::create(PATH_UI_MUSIC_ON);
 	auto musicSprite2 = Sprite::create(PATH_UI_MUSIC_ON);
 	musicSprite2->setScale(0.9f);
-	music = MenuItemSprite::create(musicSprite, musicSprite2, [=](Ref* pSender){
+	music = MenuItemSprite::create(musicSprite, musicSprite2, [&](Ref* pSender){
 		if (flagMusic)
-		{
 			CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
-		}
 		else
-		{
 			CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
-		}
 		flagMusic = !flagMusic;
 	});
 	music->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 150);
@@ -241,11 +183,10 @@ void LabelLayer::pauseScene()
 
 void LabelLayer::resumeScene()
 {
-	flagResume = true;
 	removeChild(pauseMainUI);
 	removeChild(pauseBackground);
 	removeChild(menu);
-	flagPause = !flagPause;
+	flagPause = true;
 	Director::getInstance()->resume();
 	Director::getInstance()->getEventDispatcher()->removeEventListener(pauseListener);
 	Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(gamerlayer);

@@ -18,7 +18,7 @@ void Observable::Attach(Observer* ob)
 
 void Observable::Detach(Observer* ob)
 {
-	Vector<Observer*>::iterator it = obs->begin();
+	std::vector<Observer*>::iterator it = obs->begin();
 	while (it != obs->end())
 	{
 		if ((*it) == ob)
@@ -30,7 +30,7 @@ void Observable::Detach(Observer* ob)
 
 void Observable::Notify()
 {
-	Vector<Observer*>::iterator it = obs->begin();
+	std::vector<Observer*>::iterator it = obs->begin();
 	while (it != obs->end())
 		(*it++)->Update(this);
 }
