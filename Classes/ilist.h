@@ -218,6 +218,127 @@ public:
                         popBack();
                 }
         }
+
+
+
+
+
+
+
+//        // Don't uses operator since we could not decide whether it needs 'retain'/'release'.
+////    T& operator[](int index)
+////    {
+////        return _data[index];
+////    }
+////
+////    const T& operator[](int index) const
+////    {
+////        return _data[index];
+////    }
+//
+//    /**
+//     * Requests that the vector capacity be at least enough to contain n elements.
+//     * @param capacity Minimum capacity requested of the Vector.
+//     */
+//    void reserve(ssize_t n)
+//    {
+//        _data.reserve(n);
+//    }
+//
+//    /** @brief Returns the size of the storage space currently allocated for the Vector, expressed in terms of elements.
+//     *  @note This capacity is not necessarily equal to the Vector size.
+//     *        It can be equal or greater, with the extra space allowing to accommodate for growth without the need to reallocate on each insertion.
+//     *  @return The size of the currently allocated storage capacity in the Vector, measured in terms of the number elements it can hold.
+//     */
+//    ssize_t capacity() const
+//    {
+//        return _data.capacity();
+//    }
+//
+//    /** @brief Returns the number of elements in the Vector.
+//     *  @note This is the number of actual objects held in the Vector, which is not necessarily equal to its storage capacity.
+//     *  @return The number of elements in the Vector.
+//     */
+//    ssize_t size() const
+//    {
+//        return  _data.size();
+//    }
+//
+//    /** @brief Returns whether the Vector is empty (i.e. whether its size is 0).
+//     *  @note This function does not modify the container in any way. To clear the content of a vector, see Vector<T>::clear.
+//     */
+//    bool empty() const
+//    {
+//        return _data.empty();
+//    }
+//
+//    /** Returns the maximum number of elements that the Vector can hold. */
+//    ssize_t max_size() const
+//    {
+//        return _data.max_size();
+//    }
+//
+//    /** Returns index of a certain object, return UINT_MAX if doesn't contain the object */
+//    ssize_t getIndex(T object) const
+//    {
+//        auto iter = std::find(_data.begin(), _data.end(), object);
+//        if (iter != _data.end())
+//            return iter - _data.begin();
+//
+//        return -1;
+//    }
+//
+//    /** @brief Find the object in the Vector.
+//     *  @param object The object to find.
+//     *  @return Returns an iterator which refers to the element that its value is equals to object.
+//     *          Returns Vector::end() if not found.
+//     */
+//    const_iterator find(T object) const
+//    {
+//        return std::find(_data.begin(), _data.end(), object);
+//    }
+//
+//    /** @brief Find the object in the Vector.
+//     *  @param object The object to find.
+//     *  @return Returns an iterator which refers to the element that its value is equals to object.
+//     *          Returns Vector::end() if not found.
+//     */
+//    iterator find(T object)
+//    {
+//        return std::find(_data.begin(), _data.end(), object);
+//    }
+
+
+//     * Checks whether an object is in the container.
+//     * @param object The object to be checked.
+//     * @return True if the object is in the container, false if not.
+//     */
+//    bool contains(T object) const
+//    {
+//        return( std::find(_data.begin(), _data.end(), object) != _data.end() );
+//    }
+//
+//    /**
+//     * Checks whether two vectors are equal.
+//     * @param other The vector to be compared.
+//     * @return True if two vectors are equal, false if not.
+//     */
+//    bool equals(const Vector<T> &other)
+//    {
+//        ssize_t s = this->size();
+//        if (s != other.size())
+//            return false;
+//
+//        for (ssize_t i = 0; i < s; i++)
+//        {
+//            if (this->at(i) != other.at(i))
+//            {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
+
 };
 
 #endif // ILIST_H
