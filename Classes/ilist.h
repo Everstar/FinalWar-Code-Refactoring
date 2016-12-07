@@ -6,6 +6,7 @@ template<class T>
 class ilist
 {
 public:
+        //  list cell
         struct Node
         {
                 T data;
@@ -20,44 +21,66 @@ public:
                 {
                         current = p;
                 }
+
+                //  Constructs a copy of other.
                 listIterator(const listIterator& other)
                 {
                         current = other.current;
                 }
+
+                //  The prefix ++ operator, advances the iterator to the next item in the object.
+                //  Returns an iterator to the new current item.
                 listIterator& operator++()
                 {
                         current = current->next;
                         return *this;
                 }
+
+                //  The prefix -- operator, makes the preceding item current.
+                //  Returns an iterator pointing to the new current item.
                 listIterator& operator--()
                 {
                         current = current->prev;
                         return *this;
                 }
+
+                //  The postfix ++ operator, advances the iterator to the next item in the object.
+                //  Returns an iterator to the previously current item.
                 listIterator operator++(int)
                 {
                         listIterator temp = *this;
                         ++(*this);
                         return temp;
                 }
+
+                //  The postfix -- operator, makes the preceding item current.
+                //  Returns an iterator pointing to the previously current item.
                 listIterator operator--(int)
                 {
                         listIterator temp = *this;
                         --(*this);
                         return temp;
                 }
+
+                //  Returns a pointer to the current item.
                 Node* operator->()
                 {
                         return current;
                 }
+
+                //  Returns the current item's value.
                 T& operator*()
                 {
                         return current->data;
                 }
+
+                //  Returns true if rhs points to the same item as this iterator; otherwise returns false.
                 bool operator==(const listIterator & rhs) const
                 {
                         return current == rhs.current;
                 }
+
+                //  Returns true if rhs points to a different item than this iterator; otherwise returns false.
                 bool operator!=(const listIterator & rhs) const
                 {
                         return !( *this == rhs );
@@ -115,32 +138,47 @@ public:
                         pushBack(*iter);
                 }
         }
+
+        // Returns an iterator pointing the head of the ilist.
         listIterator begin() const
         {
                 return listIterator(head->next);
         }
+
+        //  Returns an iterator referring to the end of the ilist.
         listIterator end() const
         {
                 return listIterator(tail);
         }
+
+        //  Returns the number of elements in the ilist.
+        //  This is the number of actual objects held in the ilist, which is not necessarily equal to its storage capacity.
         size_t size() const
         {
                 return _size;
         }
+
+        //  Adds a new element at the end of the ilist.
         void pushBack(const T& it)
         {
                 insert(end(), it);
         }
+
+        //  Removes the last element in the ilist.
         void popBack()
         {
                 erase(--end());
         }
+
+        //  Insert an object at certain position.
         listIterator insert(listIterator position, const T& val)
         {
                 Node* p = position.current;
                 _size++;
                 return listIterator(p->prev = p->prev->next = new Node(val, p, p->prev));
         }
+
+        //  Remove a certain object in ilist.
         listIterator erase(listIterator position)
         {
                 Node* p = position.current;
@@ -151,18 +189,28 @@ public:
                 _size--;
                 return retVal;
         }
+
+        //  Returns whether the ilist is empty.
+        //  This function does not modify the container in any way. To clear the content of a list, see ilist<T>::clear.
         bool empty() const
         {
                 return _size == 0;
         }
+
+        //  Returns the first element in the ilist.
         T& front()
         {
                 return *begin();
         }
+
+        //  Returns the last element in the ilist.
         T& back()
         {
                 return *(--end());
         }
+
+        //  Removes all elements from the ilist, leaving the container with a size of 0.
+        //  All the elements in the ilist will be released.
         void clear()
         {
                 while (!empty())
